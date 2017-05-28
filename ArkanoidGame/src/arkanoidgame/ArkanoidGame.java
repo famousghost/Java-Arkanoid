@@ -15,8 +15,8 @@ public class ArkanoidGame {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        new Window(800,600,"Moje okno");
-        //new GameWindow(800,600,"Arkanoid");
+        //Window window = new Window(800,600,"Moje okno");
+        new GameWindow(800,600,"Arkanoid");
     }
     
 }
