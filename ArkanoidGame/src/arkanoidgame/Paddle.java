@@ -15,17 +15,20 @@ import javax.swing.JPanel;
  * @author Marcin
  */
 public class Paddle extends JPanel {
-    
-    private int X;
+   
+    private int positionX;
+    private int positionY;
     private int paddleHeight;
     private int paddleWidth;
     
-    
-    private void Init(int width,int height)
+    private void Init(int positionX,int positionY,int width,int height)
     {
         paddleWidth = width;
         paddleHeight = height;
-        X=30;
+        
+        this.positionX = positionX;
+        this.positionY = positionY;
+        
         this.setLayout(null);
         this.setSize(800,600);
         this.setLocation(0, 0);
@@ -34,27 +37,31 @@ public class Paddle extends JPanel {
         
     }
     
-    public Paddle(int width,int height)
+    public Paddle(int positionX,int positionY,int width,int height)
     {
-        Init(width,height);
+        Init(positionX,positionY,width,height);
     }
         
     @Override
     public void paint(Graphics g) {
        super.paintComponents(g);
        Graphics2D rectangle = (Graphics2D)g;
-       rectangle.fillRect(X,500,paddleWidth , paddleHeight);
-       rectangle.drawRect(5, 0, 765,600);
+       rectangle.fillRect(positionX,positionY,paddleWidth , paddleHeight);
    }
     
-    public void UpdateX(int x)
+    public void MovePaddle(int x)
     {
-        X+=x;
+        positionX+=x;
     }
     
-    public int GetX()
+    public int GetPositionX()
     {
-        return X;
+        return positionX;
+    }
+    
+    public int GetPositionY()
+    {
+        return positionY;
     }
 
 }
