@@ -32,7 +32,6 @@ public class Paddle extends JPanel {
         this.setLayout(null);
         this.setSize(800,600);
         this.setLocation(0, 0);
-        this.setBackground(Color.black);
         this.setVisible(true);
         
     }
@@ -45,6 +44,7 @@ public class Paddle extends JPanel {
     @Override
     public void paint(Graphics g) {
        super.paintComponents(g);
+       g.setColor(Color.white);
        Graphics2D rectangle = (Graphics2D)g;
        rectangle.fillRect(positionX,positionY,paddleWidth , paddleHeight);
    }
@@ -62,6 +62,11 @@ public class Paddle extends JPanel {
     public int GetPositionY()
     {
         return positionY;
+    }
+    
+    public void SetPositionX(int positionX)
+    {
+        this.positionX = positionX;
     }
 
 }

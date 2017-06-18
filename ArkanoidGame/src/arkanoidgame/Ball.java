@@ -39,6 +39,7 @@ public class Ball extends JPanel {
     @Override
     public void paint(Graphics g) {
        super.paintComponents(g);
+       g.setColor(Color.white);
        Graphics2D rectangle = (Graphics2D)g;
        rectangle.fillOval(positionX,positionY,ballR,ballR);
    }

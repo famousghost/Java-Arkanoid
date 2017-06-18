@@ -5,28 +5,42 @@
  */
 package arkanoidgame;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import java.util.Timer;
 import java.util.TimerTask;
+import javax.swing.JLabel;
 
 /**
  *
  * @author Marcin
  */
-public class GameWindow extends JFrame implements KeyListener,ActionListener {
+public class GameWindow extends JFrame implements KeyListener{
+    
+    //Label
+    JLabel scoreLabel = new JLabel();
+    JLabel failedLabel = new JLabel();
+    JLabel infoLabel = new JLabel("Space: Push Ball, Move:(LeftArrow-RightArrow)");
+    JLabel gameOver = new JLabel("Game Over");
+    JLabel restartInfo = new JLabel("To Restart Click (R)");
+    
+    //Player
+    private int failedTimes;
+    private int score;
+    private boolean restartBool = false;
     
     //Blocks Property
-    JPanel blocks = new JPanel(new GridLayout(4,4));
+    private Block[] block = new Block[12];
     private int blockWidth;
     private int blockHeight;
+    private int blockPositionX;
+    private int blockPositionY;
+    private int blockCount;
+    private int destroyedBlocks;
     
     //Screen Property
     private int ScreenWidth = 800;
@@ -36,11 +50,16 @@ public class GameWindow extends JFrame implements KeyListener,ActionListener {
     private final int ballR = 25;
     private int ballMoveX = 1;
     private int ballMoveY = -1;
-    private boolean runBall = false;
+    private int moveX = 1;
+    private int moveY = -1;
+    private boolean runBall = false; 
+    private int speed;
+    private int countOfBouncy;
     
     //Paddle Property
     private final int paddleWidth = 130;
     private final int paddleHeight = 25;
+    private int startPaddlePostionX = ScreenWidth/2-20;
     private int paddlePositionX = ScreenWidth/2-20;
     private final int paddlePositionY = ScreenHeight-100;
     private int paddleMove = 5;
@@ -51,69 +70,109 @@ public class GameWindow extends JFrame implements KeyListener,ActionListener {
     Timer loopTimer;
     
     //instance of paddle JPanel
-    Paddle paddle = new Paddle(paddlePositionX,paddlePositionY,paddleWidth,paddleHeight);
+    Paddle paddle = new Paddle(paddlePositionX,paddlePositionY,paddleWidth-10,paddleHeight);
     
     //instace of ball JPanel
     Ball ball = new Ball(ballR,paddlePositionX+50,paddlePositionY-30);
     
     private void Init(int width,int height,String title)
     {
+        blockCount = 6;
+        countOfBouncy = 0;
+        failedTimes = 3;
+        speed = 1;
+        score = 0;
+        destroyedBlocks = 0;
         blockWidth = 60;
         blockHeight = 60;
+        blockPositionX = ScreenWidth/2-220;
+        blockPositionY = 20;
         ScreenWidth = width;
         ScreenHeight = height;
-        this.setLayout(null);
-        this.setBounds(0,0,width,height);
-        this.setTitle(title);
-        blocks.setSize(500, 300);
-        blocks.setLocation(150, 5);
-        for(int i=0;i<4;i++)
-        {
-            for(int j=0;j<4;j++)
-            {
-                blocks.add(new Block(blockWidth,blockHeight));
-                System.out.println("Tworze obiekt block");
-                System.out.println(blockWidth);
-            }
-        }
-        
-        //blocks.add(new Block(60,60));
-        blocks.add(new Block(120,60));
-        //this.add(blocks);
-        this.add(paddle);
-        this.add(ball);
-        this.setVisible(true);
-        this.setResizable(false);
-        this.addKeyListener(this);
+        scoreLabel.setBounds(ScreenWidth-100, 0, 100, 50);
+        infoLabel.setBounds(ScreenWidth-300, ScreenHeight-80, 400, 50);
+        failedLabel.setBounds(40, 0, 100, 50);
+
         
         //Instance of timer
         loopTimer = new Timer();
         
         //Main loop of my game
-
+        AddElements(width,height,title);
             loopTimer.scheduleAtFixedRate(new TimerTask()
             {
                 @Override
                 public void run() 
                 {
-                    MovePaddle();
-                    if(runBall)
+                    if(failedTimes >=0)
                     {
-                        MoveBall();
+                        MovePaddle();
+                        RestartBlocks();
+                        scoreLabel.setText("Score: " + score);
+                        failedLabel.setText("Lives: " + failedTimes);
+                        if(runBall)
+                        {
+                            MoveBall();
+                        }
+                        else
+                        {
+                            AttachBall();
+                        }
+                        repaint();
                     }
                     else
                     {
-                        AttachBall();
+                        getContentPane().removeAll();
+                        getContentPane().repaint();
+                        getContentPane().setBackground(Color.BLACK);
+                        gameOver.setBounds(370,100,300,300);
+                        restartInfo.setBounds(350,150,300,300);
+                        getContentPane().add(gameOver); 
+                        getContentPane().add(restartInfo); 
+                        
                     }
-                    repaint();
+                    if(restartBool)
+                    {
+                        //Restart function
+                        getContentPane().removeAll();
+                        getContentPane().repaint();
+                        AddElements(width,height,title);
+                        failedTimes = 3;
+                        countOfBouncy = 0;
+                        score = 0;
+                        moveY = -1;
+                        moveX = 1;
+                        restartBool=false;
+                        runBall = false;
+                        paddle.SetPositionX(startPaddlePostionX);
+                    }
                 }
             },0,6);
-        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+            
+        
     }
     
     public GameWindow(int width,int height,String title)
     {
         Init(width,height,title);
+    }
+    
+    private void AddElements(int width,int height,String title)
+    {
+        this.setLayout(null);
+        setBounds(0,0,width,height);
+        this.setTitle(title);
+        this.add(paddle);
+        this.add(ball);
+        this.setBackground(Color.BLACK);
+        this.setVisible(true);
+        this.setResizable(false);
+        this.addKeyListener(this);
+        this.add(scoreLabel);
+        this.add(failedLabel);
+        this.add(infoLabel);
+        CreateBlocks();
+        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
     
         
@@ -140,6 +199,9 @@ public class GameWindow extends JFrame implements KeyListener,ActionListener {
             case KeyEvent.VK_SPACE:
                 runBall = true;
                 break;
+            case KeyEvent.VK_R:
+                restartBool = true;
+                break;  
         }
     }
 
@@ -161,14 +223,11 @@ public class GameWindow extends JFrame implements KeyListener,ActionListener {
     @Override
     public void paint(Graphics g) {
        super.paintComponents(g);
+       g.setColor(Color.white);
+        
        Graphics2D rectangle = (Graphics2D)g;
        rectangle.drawRect(15,0 ,ScreenWidth-30 ,ScreenHeight);
    }
-
-    @Override
-    public void actionPerformed(ActionEvent ae) {
-
-    }
     
     private void MoveBall()
     {
@@ -184,33 +243,102 @@ public class GameWindow extends JFrame implements KeyListener,ActionListener {
         if((ball.GetPositionY()+ballR)>=ScreenHeight-30)
         {
             runBall = false;
+            failedTimes--;
             ballMoveY=-ballMoveY;
         }
-        boolean ballTouchPaddleLeftSide =  ball.GetPositionY() == paddle.GetPositionY() - 20;
-        if(ballTouchPaddleLeftSide)
-        { 
+        boolean ballTouchTopOfPaddle =  ball.GetPositionY() == (paddle.GetPositionY() - 20);
+        if(ballTouchTopOfPaddle)
+        {   
+            int left = paddle.GetPositionX();
+            int middleLeft = paddle.GetPositionX() + paddleWidth/4;
+            int middle = paddle.GetPositionX() + paddleWidth/2;
+            int middleRight = paddle.GetPositionX() + (3*paddleWidth)/4;
+            int right = paddle.GetPositionX() + paddleWidth;
+            
             //Left side of paddle ball go to left
-            boolean bouncyLeftSide =(ball.GetPositionX() >= paddle.GetPositionX()) && (ball.GetPositionX() <=(paddle.GetPositionX() + paddleWidth/2));
+            boolean boucyLeft = (ball.GetPositionX() >= left) && (ball.GetPositionX() <= middleLeft);
+            boolean boucyMiddleLeft = (ball.GetPositionX() >= middleLeft) && (ball.GetPositionX() < (middle-10));
+            boolean bouncyMiddle = (ball.GetPositionX() >= (middle-10)) && (ball.GetPositionX() <= (middle+10));
+            boolean bouncyMiddleRight = (ball.GetPositionX() > (middle+10)) && (ball.GetPositionX() <= middleRight);
+            boolean bouncyRight = (ball.GetPositionX() >= middleRight) && (ball.GetPositionX() <= right);
+            //boolean bouncyLeftSide =(ball.GetPositionX() >= paddle.GetPositionX()) && (ball.GetPositionX() <=(paddle.GetPositionX() + paddleWidth/2));
             //Right side of paddle ball go to right
-            boolean bouncyRightSide =(ball.GetPositionX() >= (paddle.GetPositionX()+paddleWidth/2)) && (ball.GetPositionX() <=(paddle.GetPositionX() + paddleWidth));
-            if(bouncyLeftSide)
+            //boolean bouncyRightSide =(ball.GetPositionX() > (paddle.GetPositionX()+paddleWidth/2)) && (ball.GetPositionX() <= (paddle.GetPositionX() + paddleWidth));
+            if(boucyLeft)
             {
-                ballMoveY=-ballMoveY;
-                ballMoveX = -1;
+                ballMoveY = moveY;
+                if(countOfBouncy < 2)
+                {
+                    moveY-=speed;
+                    moveX+=speed;
+                    countOfBouncy++;
+                }
+                ballMoveX = -moveX;
+                
             }
-            if(bouncyRightSide)
+            if(boucyMiddleLeft)
             {
-                ballMoveY=-ballMoveY;
-                ballMoveX = 1;
+                ballMoveY = (moveY *2);
+                if(countOfBouncy < 2)
+                {
+                    moveY-=speed;
+                    moveX+=speed;
+                    countOfBouncy++;
+                }
+                ballMoveX = -moveX;
+                
+            }
+            if(bouncyMiddle)
+            {
+                ballMoveY = (moveY * 2);
+                if(countOfBouncy < 2)
+                {
+                    moveY-=speed;
+                    moveX+=speed;
+                    countOfBouncy++;
+                }
+                ballMoveX = 0;
+                
+            }
+            if(bouncyMiddleRight)
+            {
+                ballMoveY = (moveY * 2);
+                if(countOfBouncy < 2)
+                {
+                    moveY-=speed;
+                    moveX+=speed;
+                    countOfBouncy++;
+                }
+                ballMoveX = moveX;
+                
+            }
+            if(bouncyRight)
+            {
+                ballMoveY = moveY;
+                if(countOfBouncy < 2)
+                {
+                    moveY-=speed;
+                    moveX+=speed;
+                    countOfBouncy++;
+                }
+                ballMoveX = moveX;
             }
         }
-    
-        
+        for(int i=0;i<12;i++)
+        {
+            CheckCollision(block[i]);
+        }
+        System.out.println(countOfBouncy);
         ball.BallMove(ballMoveX, ballMoveY);
     }
     
     private void AttachBall()
     {
+        ballMoveY = -1;
+        ballMoveX = 1;
+        moveY = -1;
+        moveX = 1;
+        countOfBouncy = 0;
         ball.SetBallPosition((paddle.GetPositionX()+50), (paddle.GetPositionY()-30));
     }
       
@@ -227,5 +355,58 @@ public class GameWindow extends JFrame implements KeyListener,ActionListener {
             if((paddle.GetPositionX()+paddleWidth)<=ScreenWidth-30)
                 paddle.MovePaddle(paddleMove);
         }
+    }
+    
+    private void CheckCollision(Block block)
+    {
+        if(block.GetIsExist())
+        {
+            boolean checkPositionX = (ball.GetPositionX() >= block.GetPositionX()) && (ball.GetPositionX() <= (block.GetPositionX()+ blockWidth));
+            boolean checkPositionY = (ball.GetPositionY() >= block.GetPositionY()) && (ball.GetPositionY() <= (block.GetPositionY() + blockHeight));
+            if(checkPositionX && checkPositionY)
+            {
+                ballMoveX = -ballMoveX;
+                ballMoveY = -ballMoveY;
+                block.Remove();
+                score++;
+                destroyedBlocks++;
+                System.out.println(score);
+            }
+        }
+    }
+    
+    private void CreateBlocks()
+    {
+        blockPositionX = ScreenWidth/2-220;
+        blockPositionY = 20;
+        for(int i=0;i<12;i++)
+        {
+            block[i] = new Block(blockPositionX,blockPositionY);
+            blockPositionX+=70;
+            this.add(block[i]);
+            block[i].SetExist(true);
+            if(i == blockCount-1)
+            {
+                blockPositionX = ScreenWidth/2-150;;
+                blockPositionY += 70;
+            }
+            else if(i== blockCount+3)
+            {
+                blockPositionX = ScreenWidth/2-80;;
+                blockPositionY += 70;
+            }
+        }
+    }
+    
+    private void RestartBlocks()
+    {
+         if(destroyedBlocks == 12)
+         {
+             for(int i=0;i<12;i++)
+             {
+                 block[i].SetExist(true);
+             }
+             destroyedBlocks=0;
+         }
     }
 }

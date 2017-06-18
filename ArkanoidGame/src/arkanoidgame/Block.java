@@ -5,6 +5,7 @@
  */
 package arkanoidgame;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import javax.swing.JPanel;
@@ -15,24 +16,63 @@ import javax.swing.JPanel;
  */
 public class Block extends JPanel {
 
+    private int positionX;
+    private int positionY;
+    private boolean isExist;
     
-    private void Init(int width,int height)
+    private void Init(int positionX,int positionY)
     {
- 
-        this.setBounds(0,0, width, height);
+        this.positionX = positionX;
+        this.positionY = positionY;
+        isExist = true;
+        this.setBounds(0,0, 800, 600);
         this.setVisible(true);
         
     }
     
-    public Block(int width,int height)
+    public Block(int positionX,int positionY)
     {
-        Init(width,height);
+        Init(positionX,positionY);
     }
     
     @Override
     public void paint(Graphics g) {
-    super.paintComponents(g);
-    Graphics2D rectangle = (Graphics2D)g;
-    rectangle.fillRect(0,0,60 , 60);
+    if(isExist)
+    {
+        super.paintComponents(g);
+        g.setColor(Color.yellow);
+        Graphics2D rectangle = (Graphics2D)g;
+        rectangle.fillRect(positionX,positionY,60 , 60);
+    }
    }
+    
+    public void SetPosition(int positionX,int positionY)
+    {
+        this.positionX = positionX;
+        this.positionY = positionY;
+    }
+    
+    public void Remove()
+    {
+        isExist = false;
+    }
+    
+    public boolean GetIsExist()
+    {
+        return isExist;
+    }
+    
+    public void SetExist(boolean isExist)
+    {
+        this.isExist = isExist;
+    }
+    
+    public int GetPositionX()
+    {
+        return positionX;
+    }
+    public int GetPositionY()
+    {
+        return positionY;
+    }
 }
