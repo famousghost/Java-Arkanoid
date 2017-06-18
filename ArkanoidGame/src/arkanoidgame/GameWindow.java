@@ -6,10 +6,9 @@
 package arkanoidgame;
 
 import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.Random;
 import javax.swing.JFrame;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -20,6 +19,9 @@ import javax.swing.JLabel;
  * @author Marcin
  */
 public class GameWindow extends JFrame implements KeyListener{
+    
+    //Instance of GameWindow
+    static GameWindow gameWidnow = new GameWindow(800,600,"Arkanoid Gra");
     
     //Label
     JLabel scoreLabel = new JLabel();
@@ -32,6 +34,7 @@ public class GameWindow extends JFrame implements KeyListener{
     private int failedTimes;
     private int score;
     private boolean restartBool = false;
+    private boolean pause = false;
     
     //Blocks Property
     private Block[] block = new Block[12];
@@ -106,19 +109,23 @@ public class GameWindow extends JFrame implements KeyListener{
                 {
                     if(failedTimes >=0)
                     {
-                        MovePaddle();
-                        RestartBlocks();
-                        scoreLabel.setText("Score: " + score);
-                        failedLabel.setText("Lives: " + failedTimes);
-                        if(runBall)
+                        Window.GetWindowInstance().CheckPauseGame();
+                        if(pause == false)
                         {
-                            MoveBall();
+                            MovePaddle();
+                            RestartBlocks();
+                            scoreLabel.setText("Score: " + score);
+                            failedLabel.setText("Lives: " + failedTimes);
+                            if(runBall)
+                            {
+                                MoveBall();
+                            }
+                            else
+                            {
+                                AttachBall();
+                            }
+                            repaint();
                         }
-                        else
-                        {
-                            AttachBall();
-                        }
-                        repaint();
                     }
                     else
                     {
@@ -152,7 +159,7 @@ public class GameWindow extends JFrame implements KeyListener{
         
     }
     
-    public GameWindow(int width,int height,String title)
+    private GameWindow(int width,int height,String title)
     {
         Init(width,height,title);
     }
@@ -202,6 +209,9 @@ public class GameWindow extends JFrame implements KeyListener{
             case KeyEvent.VK_R:
                 restartBool = true;
                 break;  
+             case KeyEvent.VK_ESCAPE:
+                pause = true;
+                break;  
         }
     }
 
@@ -220,14 +230,7 @@ public class GameWindow extends JFrame implements KeyListener{
                 break;
         }
     }
-    @Override
-    public void paint(Graphics g) {
-       super.paintComponents(g);
-       g.setColor(Color.white);
-        
-       Graphics2D rectangle = (Graphics2D)g;
-       rectangle.drawRect(15,0 ,ScreenWidth-30 ,ScreenHeight);
-   }
+
     
     private void MoveBall()
     {
@@ -246,7 +249,7 @@ public class GameWindow extends JFrame implements KeyListener{
             failedTimes--;
             ballMoveY=-ballMoveY;
         }
-        boolean ballTouchTopOfPaddle =  ball.GetPositionY() == (paddle.GetPositionY() - 20);
+        boolean ballTouchTopOfPaddle =  ball.GetPositionY() == (paddle.GetPositionY() - 15);
         if(ballTouchTopOfPaddle)
         {   
             int left = paddle.GetPositionX();
@@ -257,9 +260,9 @@ public class GameWindow extends JFrame implements KeyListener{
             
             //Left side of paddle ball go to left
             boolean boucyLeft = (ball.GetPositionX() >= left) && (ball.GetPositionX() <= middleLeft);
-            boolean boucyMiddleLeft = (ball.GetPositionX() >= middleLeft) && (ball.GetPositionX() < (middle-10));
-            boolean bouncyMiddle = (ball.GetPositionX() >= (middle-10)) && (ball.GetPositionX() <= (middle+10));
-            boolean bouncyMiddleRight = (ball.GetPositionX() > (middle+10)) && (ball.GetPositionX() <= middleRight);
+            boolean boucyMiddleLeft = (ball.GetPositionX() >= middleLeft) && (ball.GetPositionX() < (middle-5));
+            boolean bouncyMiddle = (ball.GetPositionX() >= (middle-5)) && (ball.GetPositionX() <= (middle+5));
+            boolean bouncyMiddleRight = (ball.GetPositionX() > (middle+5)) && (ball.GetPositionX() <= middleRight);
             boolean bouncyRight = (ball.GetPositionX() >= middleRight) && (ball.GetPositionX() <= right);
             //boolean bouncyLeftSide =(ball.GetPositionX() >= paddle.GetPositionX()) && (ball.GetPositionX() <=(paddle.GetPositionX() + paddleWidth/2));
             //Right side of paddle ball go to right
@@ -324,20 +327,21 @@ public class GameWindow extends JFrame implements KeyListener{
                 ballMoveX = moveX;
             }
         }
+        ball.BallMove(ballMoveX, ballMoveY);
         for(int i=0;i<12;i++)
         {
             CheckCollision(block[i]);
         }
-        System.out.println(countOfBouncy);
-        ball.BallMove(ballMoveX, ballMoveY);
     }
     
     private void AttachBall()
     {
-        ballMoveY = -1;
-        ballMoveX = 1;
+        Random ran = new Random();
+        int x = ran.nextInt(3) + (-1);
         moveY = -1;
         moveX = 1;
+        ballMoveY = -1;
+        ballMoveX = x;
         countOfBouncy = 0;
         ball.SetBallPosition((paddle.GetPositionX()+50), (paddle.GetPositionY()-30));
     }
@@ -362,16 +366,16 @@ public class GameWindow extends JFrame implements KeyListener{
         if(block.GetIsExist())
         {
             boolean checkPositionX = (ball.GetPositionX() >= block.GetPositionX()) && (ball.GetPositionX() <= (block.GetPositionX()+ blockWidth));
-            boolean checkPositionY = (ball.GetPositionY() >= block.GetPositionY()) && (ball.GetPositionY() <= (block.GetPositionY() + blockHeight));
+            boolean checkPositionY = (ball.GetPositionY() >= (block.GetPositionY()-10)) && (ball.GetPositionY() <= (block.GetPositionY() + (blockHeight+10)));
             if(checkPositionX && checkPositionY)
             {
-                ballMoveX = -ballMoveX;
-                ballMoveY = -ballMoveY;
+                ballMoveX = moveX;
+                ballMoveY = -moveY;
                 block.Remove();
                 score++;
                 destroyedBlocks++;
-                System.out.println(score);
             }
+                
         }
     }
     
@@ -387,12 +391,12 @@ public class GameWindow extends JFrame implements KeyListener{
             block[i].SetExist(true);
             if(i == blockCount-1)
             {
-                blockPositionX = ScreenWidth/2-150;;
+                blockPositionX = ScreenWidth/2-150;
                 blockPositionY += 70;
             }
             else if(i== blockCount+3)
             {
-                blockPositionX = ScreenWidth/2-80;;
+                blockPositionX = ScreenWidth/2-80;
                 blockPositionY += 70;
             }
         }
@@ -408,5 +412,20 @@ public class GameWindow extends JFrame implements KeyListener{
              }
              destroyedBlocks=0;
          }
+    }
+    
+    public boolean GetPause()
+    {
+        return pause;
+    }
+    
+    public void SetPause(boolean pause)
+    {
+        this.pause = pause;
+    }
+    
+    public static GameWindow GetInstanceGameWindow()
+    {
+        return gameWidnow;
     }
 }

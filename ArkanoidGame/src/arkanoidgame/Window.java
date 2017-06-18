@@ -6,7 +6,6 @@
 package arkanoidgame;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -26,6 +25,8 @@ public class Window extends JFrame implements ActionListener {
     JButton start = new JButton("Start");
     JButton stats = new JButton("Stats");
     JButton exit = new JButton("Exit");
+    
+    static Window window = new Window(800,600,"Arkanoid");
     
     private void Init(int width,int height,String title)
     {
@@ -90,7 +91,7 @@ public class Window extends JFrame implements ActionListener {
         
     }
     
-    public Window(int width,int height,String title)
+    private Window(int width,int height,String title)
     {
         Init(width,height,title);
     }
@@ -100,7 +101,9 @@ public class Window extends JFrame implements ActionListener {
         Object source = ae.getSource();
         if(source == start)
         {
-            GameWindow gameWindow = new GameWindow(800,600,"Arkanoid");
+            GameWindow.GetInstanceGameWindow();
+            GameWindow.GetInstanceGameWindow().SetPause(false);
+            GameWindow.GetInstanceGameWindow().setVisible(true);
             this.setVisible(false);
         }
         if(source == stats)
@@ -111,6 +114,20 @@ public class Window extends JFrame implements ActionListener {
         {
             dispose();
         }
+    }
+    
+    public void CheckPauseGame()
+    {
+        if(GameWindow.GetInstanceGameWindow().GetPause())
+        {
+            this.setVisible(true);
+            GameWindow.GetInstanceGameWindow().setVisible(false);
+        }
+    }
+    
+    public static Window GetWindowInstance()
+    {
+        return window;
     }
     
 }

@@ -47,6 +47,7 @@ public class Paddle extends JPanel {
        g.setColor(Color.white);
        Graphics2D rectangle = (Graphics2D)g;
        rectangle.fillRect(positionX,positionY,paddleWidth , paddleHeight);
+       rectangle.drawRect(15,0 ,770 ,570);
    }
     
     public void MovePaddle(int x)
