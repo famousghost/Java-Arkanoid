@@ -260,9 +260,8 @@ public class GameWindow extends JFrame implements KeyListener{
             
             //Left side of paddle ball go to left
             boolean boucyLeft = (ball.GetPositionX() >= left) && (ball.GetPositionX() <= middleLeft);
-            boolean boucyMiddleLeft = (ball.GetPositionX() >= middleLeft) && (ball.GetPositionX() < (middle-5));
-            boolean bouncyMiddle = (ball.GetPositionX() >= (middle-5)) && (ball.GetPositionX() <= (middle+5));
-            boolean bouncyMiddleRight = (ball.GetPositionX() > (middle+5)) && (ball.GetPositionX() <= middleRight);
+            boolean boucyMiddleLeft = (ball.GetPositionX() >= middleLeft) && (ball.GetPositionX() <= middle);
+            boolean bouncyMiddleRight = (ball.GetPositionX() >= middle) && (ball.GetPositionX() <= middleRight);
             boolean bouncyRight = (ball.GetPositionX() >= middleRight) && (ball.GetPositionX() <= right);
             //boolean bouncyLeftSide =(ball.GetPositionX() >= paddle.GetPositionX()) && (ball.GetPositionX() <=(paddle.GetPositionX() + paddleWidth/2));
             //Right side of paddle ball go to right
@@ -289,18 +288,6 @@ public class GameWindow extends JFrame implements KeyListener{
                     countOfBouncy++;
                 }
                 ballMoveX = -moveX;
-                
-            }
-            if(bouncyMiddle)
-            {
-                ballMoveY = (moveY * 2);
-                if(countOfBouncy < 2)
-                {
-                    moveY-=speed;
-                    moveX+=speed;
-                    countOfBouncy++;
-                }
-                ballMoveX = 0;
                 
             }
             if(bouncyMiddleRight)
@@ -341,6 +328,10 @@ public class GameWindow extends JFrame implements KeyListener{
         moveY = -1;
         moveX = 1;
         ballMoveY = -1;
+        if(x == 0)
+        {
+            x=x+1;
+        }
         ballMoveX = x;
         countOfBouncy = 0;
         ball.SetBallPosition((paddle.GetPositionX()+50), (paddle.GetPositionY()-30));
@@ -369,8 +360,8 @@ public class GameWindow extends JFrame implements KeyListener{
             boolean checkPositionY = (ball.GetPositionY() >= (block.GetPositionY()-10)) && (ball.GetPositionY() <= (block.GetPositionY() + (blockHeight+10)));
             if(checkPositionX && checkPositionY)
             {
-                ballMoveX = moveX;
-                ballMoveY = -moveY;
+                ballMoveX = -ballMoveX;
+                ballMoveY = -ballMoveY;
                 block.Remove();
                 score++;
                 destroyedBlocks++;
