@@ -45,10 +45,10 @@ public class ReadFromFile {
                 fileReader.close();
                 bufferedReader.close();
             } catch (IOException ex) {
-                Logger.getLogger(ReadFromFile.class.getName()).log(Level.WARNING, null, ex);
+                Logger.getLogger(ReadFromFile.class.getName()).log(Level.FINEST, null, ex);
             }
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(ReadFromFile.class.getName()).log(Level.WARNING, null, ex);
+            Logger.getLogger(ReadFromFile.class.getName()).log(Level.FINEST, null, ex);
         }
     }
     

@@ -39,8 +39,8 @@ public class Window extends JFrame implements ActionListener {
     
     private ReadFromFile fileRead = new ReadFromFile();
     
-    private static int halfOfScreenWidth;
-    private static int halfOfScreenHeight;
+    private int halfOfScreenWidth;
+    private int halfOfScreenHeight;
     
     
     static Window window = new Window(800,600,"Arkanoid");
@@ -194,7 +194,6 @@ public class Window extends JFrame implements ActionListener {
         if(GameWindow.GetInstanceGameWindow().GetPause())
         {
             start.setText("Resume");
-            this.setLocation(halfOfScreenWidth, halfOfScreenHeight);
             this.setVisible(true);
             GameWindow.GetInstanceGameWindow().setVisible(false);
         }
@@ -209,11 +208,11 @@ public class Window extends JFrame implements ActionListener {
         return window;
     }
     
-    public static int GetHalfOfScreenWidth()
+    public int GetHalfOfScreenWidth()
     {
         return halfOfScreenWidth;
     }
-    public static int GetHalfOfScreenHeight()
+    public int GetHalfOfScreenHeight()
     {
         return halfOfScreenHeight;
     }

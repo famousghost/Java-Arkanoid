@@ -36,7 +36,7 @@ public class SaveToFile {
                 bufferedWriter.close();
                 fileWriter.close();
             } catch (IOException ex) {
-                Logger.getLogger(SaveToFile.class.getName()).log(Level.WARNING, null, ex);
+                Logger.getLogger(SaveToFile.class.getName()).log(Level.FINEST, null, ex);
             }
         
     } 

@@ -5,10 +5,12 @@
         <group>
             <file>file:/D:/Java/ArkanoidGame/src/arkanoidgame/Window.java</file>
             <file>file:/D:/Java/ArkanoidGame/src/arkanoidgame/ArkanoidGame.java</file>
+            <file>file:/D:/Java/ArkanoidGame/src/arkanoidgame/SaveToFile.java</file>
             <file>file:/D:/Java/ArkanoidGame/src/arkanoidgame/Ball.java</file>
+            <file>file:/D:/Java/ArkanoidGame/src/arkanoidgame/ReadFromFile.java</file>
             <file>file:/D:/Java/ArkanoidGame/src/arkanoidgame/Block.java</file>
+            <file>file:/D:/Java/ArkanoidGame/src/arkanoidgame/frame.java</file>
             <file>file:/D:/Java/ArkanoidGame/src/arkanoidgame/GameWindow.java</file>
-            <file>file:/D:/Java/ArkanoidGame/src/arkanoidgame/Paddle.java</file>
         </group>
     </open-files>
 </project-private>

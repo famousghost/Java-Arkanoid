@@ -30,7 +30,7 @@ public class GameWindow extends JFrame implements KeyListener{
     //Label
     JLabel scoreLabel = new JLabel();
     JLabel failedLabel = new JLabel();
-    JLabel infoLabel = new JLabel("Space: Push Ball, Move:(LeftArrow-RightArrow)");
+    JLabel infoLabel = new JLabel("Escape: Pause Game ,Space: Push Ball, Move:(LeftArrow-RightArrow)");
     JLabel gameOver = new JLabel("Game Over");
     JLabel restartInfo = new JLabel("To Restart Click (R)");
     
@@ -99,7 +99,7 @@ public class GameWindow extends JFrame implements KeyListener{
         ScreenWidth = width;
         ScreenHeight = height;
         scoreLabel.setBounds(ScreenWidth-100, 0, 100, 50);
-        infoLabel.setBounds(ScreenWidth-300, ScreenHeight-80, 400, 50);
+        infoLabel.setBounds(ScreenWidth-600, ScreenHeight-80, 400, 50);
         failedLabel.setBounds(40, 0, 100, 50);
 
         
@@ -118,6 +118,7 @@ public class GameWindow extends JFrame implements KeyListener{
                         Window.GetWindowInstance().CheckPauseGame();
                         if(pause == false)
                         {
+                            Window.GetWindowInstance().setLocation(Window.GetWindowInstance().GetHalfOfScreenWidth(), Window.GetWindowInstance().GetHalfOfScreenHeight());
                             MovePaddle();
                             RestartBlocks();
                             scoreLabel.setText("Score: " + score);
@@ -216,7 +217,7 @@ public class GameWindow extends JFrame implements KeyListener{
     private void AddElements(int width,int height,String title)
     {
         this.setLayout(null);
-        this.setBounds(Window.GetHalfOfScreenWidth(),Window.GetHalfOfScreenHeight(),width,height);
+        this.setBounds(Window.GetWindowInstance().GetHalfOfScreenWidth(),Window.GetWindowInstance().GetHalfOfScreenHeight(),width,height);
         this.setTitle(title);
         this.add(paddle);
         this.add(ball);
