@@ -23,6 +23,10 @@ public class GameWindow extends JFrame implements KeyListener{
     //Instance of GameWindow
     static GameWindow gameWidnow = new GameWindow(800,600,"Arkanoid Gra");
     
+    //Instance of SaveToFile
+    private SaveToFile save = new SaveToFile();
+    private ReadFromFile read = new ReadFromFile();
+    
     //Label
     JLabel scoreLabel = new JLabel();
     JLabel failedLabel = new JLabel();
@@ -35,6 +39,8 @@ public class GameWindow extends JFrame implements KeyListener{
     private int score;
     private boolean restartBool = false;
     private boolean pause = false;
+    private boolean over = false;
+    static int[] scoreArray = new int[3];
     
     //Blocks Property
     private Block[] block = new Block[12];
@@ -127,16 +133,56 @@ public class GameWindow extends JFrame implements KeyListener{
                             repaint();
                         }
                     }
-                    else
+                    else if(failedTimes <0 && over == false)
                     {
+                        read.Read();
+                        int licznik = 0;
+                        for(int i=0;i<3;i++)
+                        {
+                            scoreArray[i] = read.scoresIntArray[i];
+                        }
+                        for(int i=0;i<3;i++)
+                        {
+                            if(score>scoreArray[i])
+                            {
+                                licznik++;
+                            }
+                        }
+                        if(licznik>0)
+                        {
+                            
+                            //Bardzo prymitywne ale nie miałem pomysłu na pętle a chciałem tylko 3 największe wyniki
+                            int j = licznik-1;
+                            int k = 0;
+                            while(j>0)
+                            {
+                                
+                                scoreArray[k] = scoreArray[k+1];
+                                k++;
+                                j--;
+                            }
+                            scoreArray[licznik-1] = score;
+
+  
+                            String[] scores = new String[3];
+                            for(int i=0;i<3;i++)
+                            {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append("");
+                                sb.append(scoreArray[i]);
+                                scores[i] = sb.toString(); 
+                            }
+                            save.Save(scores);
+                        }
                         getContentPane().removeAll();
                         getContentPane().repaint();
                         getContentPane().setBackground(Color.BLACK);
                         gameOver.setBounds(370,100,300,300);
                         restartInfo.setBounds(350,150,300,300);
                         getContentPane().add(gameOver); 
-                        getContentPane().add(restartInfo); 
-                        
+                        getContentPane().add(restartInfo);
+                        over = true;
+
                     }
                     if(restartBool)
                     {
@@ -146,12 +192,15 @@ public class GameWindow extends JFrame implements KeyListener{
                         AddElements(width,height,title);
                         failedTimes = 3;
                         countOfBouncy = 0;
+                        destroyedBlocks = 0;
                         score = 0;
                         moveY = -1;
                         moveX = 1;
                         restartBool=false;
+                        pause = false;
                         runBall = false;
                         paddle.SetPositionX(startPaddlePostionX);
+                        over= false;
                     }
                 }
             },0,6);
@@ -167,7 +216,7 @@ public class GameWindow extends JFrame implements KeyListener{
     private void AddElements(int width,int height,String title)
     {
         this.setLayout(null);
-        setBounds(0,0,width,height);
+        this.setBounds(Window.GetHalfOfScreenWidth(),Window.GetHalfOfScreenHeight(),width,height);
         this.setTitle(title);
         this.add(paddle);
         this.add(ball);
@@ -208,7 +257,7 @@ public class GameWindow extends JFrame implements KeyListener{
                 break;
             case KeyEvent.VK_R:
                 restartBool = true;
-                break;  
+                break;
              case KeyEvent.VK_ESCAPE:
                 pause = true;
                 break;  
@@ -365,6 +414,7 @@ public class GameWindow extends JFrame implements KeyListener{
                 block.Remove();
                 score++;
                 destroyedBlocks++;
+                System.out.println(destroyedBlocks);
             }
                 
         }
@@ -417,6 +467,15 @@ public class GameWindow extends JFrame implements KeyListener{
     
     public static GameWindow GetInstanceGameWindow()
     {
+        if(gameWidnow == null)
+        {
+            gameWidnow = new GameWindow(800,600,"Arkanoid");
+        }
         return gameWidnow;
+    }
+    
+    public void SetSizeOfGameWindow(int positionX,int positionY)
+    {
+        this.setLocation(positionX, positionY);
     }
 }
