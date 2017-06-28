@@ -313,13 +313,14 @@ public class GameWindow extends JFrame implements KeyListener{
             boolean boucyMiddleLeft = (ball.GetPositionX() >= middleLeft) && (ball.GetPositionX() <= middle);
             boolean bouncyMiddleRight = (ball.GetPositionX() >= middle) && (ball.GetPositionX() <= middleRight);
             boolean bouncyRight = (ball.GetPositionX() >= middleRight) && (ball.GetPositionX() <= right);
+            boolean countOfBouncyCheck = countOfBouncy < 2;
             //boolean bouncyLeftSide =(ball.GetPositionX() >= paddle.GetPositionX()) && (ball.GetPositionX() <=(paddle.GetPositionX() + paddleWidth/2));
             //Right side of paddle ball go to right
             //boolean bouncyRightSide =(ball.GetPositionX() > (paddle.GetPositionX()+paddleWidth/2)) && (ball.GetPositionX() <= (paddle.GetPositionX() + paddleWidth));
             if(boucyLeft)
             {
                 ballMoveY = moveY;
-                if(countOfBouncy < 2)
+                if(countOfBouncyCheck)
                 {
                     moveY-=speed;
                     moveX+=speed;
@@ -331,7 +332,7 @@ public class GameWindow extends JFrame implements KeyListener{
             if(boucyMiddleLeft)
             {
                 ballMoveY = (moveY *2);
-                if(countOfBouncy < 2)
+                if(countOfBouncyCheck)
                 {
                     moveY-=speed;
                     moveX+=speed;
@@ -343,7 +344,7 @@ public class GameWindow extends JFrame implements KeyListener{
             if(bouncyMiddleRight)
             {
                 ballMoveY = (moveY * 2);
-                if(countOfBouncy < 2)
+                if(countOfBouncyCheck)
                 {
                     moveY-=speed;
                     moveX+=speed;
@@ -355,7 +356,7 @@ public class GameWindow extends JFrame implements KeyListener{
             if(bouncyRight)
             {
                 ballMoveY = moveY;
-                if(countOfBouncy < 2)
+                if(countOfBouncyCheck)
                 {
                     moveY-=speed;
                     moveX+=speed;
@@ -367,7 +368,9 @@ public class GameWindow extends JFrame implements KeyListener{
         ball.BallMove(ballMoveX, ballMoveY);
         for(int i=0;i<12;i++)
         {
-            CheckCollision(block[i]);
+            if(CheckCollision(block[i])){
+                break;
+            }
         }
     }
     
@@ -402,7 +405,7 @@ public class GameWindow extends JFrame implements KeyListener{
         }
     }
     
-    private void CheckCollision(Block block)
+    private boolean CheckCollision(Block block)
     {
         if(block.GetIsExist())
         {
@@ -416,9 +419,11 @@ public class GameWindow extends JFrame implements KeyListener{
                 score++;
                 destroyedBlocks++;
                 System.out.println(destroyedBlocks);
+                return true;
             }
                 
         }
+        return false;
     }
     
     private void CreateBlocks()
