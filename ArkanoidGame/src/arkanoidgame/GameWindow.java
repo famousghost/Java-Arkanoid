@@ -64,6 +64,7 @@ public class GameWindow extends JFrame implements KeyListener{
     private boolean runBall = false; 
     private int speed;
     private int countOfBouncy;
+    private int maxCountOfBouncy;
     
     //Paddle Property
     private final int paddleWidth = 130;
@@ -89,6 +90,7 @@ public class GameWindow extends JFrame implements KeyListener{
         blockCount = 6;
         countOfBouncy = 0;
         failedTimes = 3;
+        maxCountOfBouncy = 0;
         speed = 1;
         score = 0;
         destroyedBlocks = 0;
@@ -299,7 +301,7 @@ public class GameWindow extends JFrame implements KeyListener{
             failedTimes--;
             ballMoveY=-ballMoveY;
         }
-        boolean ballTouchTopOfPaddle =  ball.GetPositionY() == (paddle.GetPositionY() - 15);
+        boolean ballTouchTopOfPaddle =  ball.GetPositionY() >= (paddle.GetPositionY() - 20);
         if(ballTouchTopOfPaddle)
         {   
             int left = paddle.GetPositionX();
@@ -313,7 +315,7 @@ public class GameWindow extends JFrame implements KeyListener{
             boolean boucyMiddleLeft = (ball.GetPositionX() >= middleLeft) && (ball.GetPositionX() <= middle);
             boolean bouncyMiddleRight = (ball.GetPositionX() >= middle) && (ball.GetPositionX() <= middleRight);
             boolean bouncyRight = (ball.GetPositionX() >= middleRight) && (ball.GetPositionX() <= right);
-            boolean countOfBouncyCheck = countOfBouncy < 2;
+            boolean countOfBouncyCheck = countOfBouncy < maxCountOfBouncy;
             //boolean bouncyLeftSide =(ball.GetPositionX() >= paddle.GetPositionX()) && (ball.GetPositionX() <=(paddle.GetPositionX() + paddleWidth/2));
             //Right side of paddle ball go to right
             //boolean bouncyRightSide =(ball.GetPositionX() > (paddle.GetPositionX()+paddleWidth/2)) && (ball.GetPositionX() <= (paddle.GetPositionX() + paddleWidth));
@@ -368,7 +370,8 @@ public class GameWindow extends JFrame implements KeyListener{
         ball.BallMove(ballMoveX, ballMoveY);
         for(int i=0;i<12;i++)
         {
-            if(CheckCollision(block[i])){
+            if(CheckCollision(block[i]))
+            {
                 break;
             }
         }
@@ -418,7 +421,6 @@ public class GameWindow extends JFrame implements KeyListener{
                 block.Remove();
                 score++;
                 destroyedBlocks++;
-                System.out.println(destroyedBlocks);
                 return true;
             }
                 
@@ -458,6 +460,8 @@ public class GameWindow extends JFrame implements KeyListener{
                  block[i].SetExist(true);
              }
              destroyedBlocks=0;
+             if(maxCountOfBouncy < 2)
+             maxCountOfBouncy++;
          }
     }
     
