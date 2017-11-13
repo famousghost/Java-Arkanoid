@@ -2,7 +2,7 @@
 
 #Biblioteki
 
-Java Swing - biblioteka pomagająca tworzyć graficzny interfejs użtykownika oraz rysowanie obiektów w języku Kava.
+Java Swing - biblioteka pomagająca tworzyć graficzny interfejs użtykownika oraz rysowanie obiektów w języku Java.
 
 #Opis
 
